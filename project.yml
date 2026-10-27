@@ -1,0 +1,37 @@
+name: CreatureHunt
+options:
+  bundleIdPrefix: com.pratikpoddar
+  deploymentTarget:
+    iOS: "17.2"
+packages:
+  MWDAT:
+    url: https://github.com/facebook/meta-wearables-dat-ios
+    exactVersion: 1.0.1
+targets:
+  CreatureHunt:
+    type: application
+    platform: iOS
+    scheme: {}
+    sources:
+      - path: CreatureHunt
+        excludes:
+          - Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.pratikpoddar.creaturehunt
+        INFOPLIST_FILE: CreatureHunt/Info.plist
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        DEVELOPMENT_TEAM: ""
+    dependencies:
+      - package: MWDAT
+        product: MWDATCore
+      - package: MWDAT
+        product: MWDATMotion
+      - package: MWDAT
+        product: MWDATDisplay
+      - package: MWDAT
+        product: MWDATMockDevice
