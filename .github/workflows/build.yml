@@ -1,0 +1,52 @@
+name: build
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pick newest Xcode
+        run: |
+          ls /Applications | grep -i xcode || true
+          X=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          [ -n "$X" ] && sudo xcode-select -s "$X"
+          xcodebuild -version
+      - name: Generate project
+        run: brew install xcodegen && xcodegen generate
+      - name: Build (simulator, Debug)
+        id: sim
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcodebuild -project CreatureHunt.xcodeproj -scheme CreatureHunt -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee sim.log
+      - name: Build (device, Release)
+        id: dev
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcodebuild -project CreatureHunt.xcodeproj -scheme CreatureHunt -configuration Release \
+            -destination 'generic/platform=iOS' -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee dev.log
+      - name: Publish log
+        if: always()
+        run: |
+          mkdir -p out
+          { echo "commit: $GITHUB_SHA"; echo "xcode: $(xcodebuild -version | tr '\n' ' ')";
+            echo "sim: ${{ steps.sim.outcome }}  device: ${{ steps.dev.outcome }}"; echo;
+            echo "== SIM ERRORS =="; grep -E "error:|warning: .*deprecated" sim.log | sort -u | head -150 || true;
+            echo; echo "== DEVICE ERRORS =="; grep -E "error:" dev.log | sort -u | head -80 || true;
+            echo; echo "== SIM TAIL =="; tail -60 sim.log || true; } > out/build-log.txt
+          cd out && git init -q && git checkout -q -b ci-logs
+          git config user.email ci@example.com && git config user.name ci
+          git add . && git commit -qm "log $GITHUB_SHA"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-logs
+      - name: Fail if broken
+        if: steps.sim.outcome != 'success' || steps.dev.outcome != 'success'
+        run: exit 1
