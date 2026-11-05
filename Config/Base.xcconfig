@@ -1,0 +1,10 @@
+// Shared build settings for Creature Hunt.
+// Real Meta Wearables Developer Center values and your Apple team go in
+// Config/Secrets.xcconfig (not committed; copy Secrets.xcconfig.example).
+// With glasses Developer Mode on, the 0 placeholders work for local testing.
+
+META_APP_ID = 0
+CLIENT_TOKEN = 0
+DEVELOPMENT_TEAM =
+
+#include? "Secrets.xcconfig"
