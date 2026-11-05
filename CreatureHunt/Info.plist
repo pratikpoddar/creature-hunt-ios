@@ -38,9 +38,9 @@
 		<key>AppLinkURLScheme</key>
 		<string>creaturehunt://</string>
 		<key>MetaAppID</key>
-		<string>0</string>
+		<string>$(META_APP_ID)</string>
 		<key>ClientToken</key>
-		<string>0</string>
+		<string>$(CLIENT_TOKEN)</string>
 		<key>TeamID</key>
 		<string>$(DEVELOPMENT_TEAM)</string>
 		<key>Analytics</key>
