@@ -29,8 +29,20 @@ Meta glasses supply head tracking and play the sound through their open-ear spea
 1. In this folder, run `xcodegen generate`, then open `CreatureHunt.xcodeproj`.
    Xcode downloads Meta's toolkit (`meta-wearables-dat-ios` 1.0.1) automatically.
 2. Select the **CreatureHunt** target → Signing & Capabilities → choose your Team.
-   Change the bundle identifier from `com.example.creaturehunt` to one you own.
-3. Run on your iPhone.
+   A free Apple ID works (it appears as "Personal Team"). The bundle ID is
+   `com.pratikpoddar.creaturehunt`; leave it unless that ID is already taken on your team.
+3. On the iPhone: Settings → Privacy & Security → **Developer Mode** on. Plug it in and press **Run**.
+   On first launch, trust the developer under Settings → General → VPN & Device Management.
+
+With a free Apple ID the installed app stops opening after 7 days; press Run again to renew.
+TestFlight and the App Store need the paid Apple Developer Program.
+
+### Meta and Apple IDs (not committed)
+
+`Info.plist` reads `MetaAppID` and `ClientToken` from the build settings `META_APP_ID` and
+`CLIENT_TOKEN`, set in `Config/Base.xcconfig` (placeholders `0`). To use real values, copy
+`Config/Secrets.xcconfig.example` to `Config/Secrets.xcconfig` (git-ignored) and fill in the
+values from Wearables Developer Center and your Apple team ID. Re-run `xcodegen generate`.
 
 ## Connect your glasses
 
@@ -43,8 +55,8 @@ Meta glasses supply head tracking and play the sound through their open-ear spea
 4. Put the glasses on. The lantern should follow your head.
    If turning right moves the lantern left, switch on **Reverse turn direction**.
 
-With Developer Mode on, `MetaAppID` and `ClientToken` in `Info.plist` can stay `0`.
-Before shipping, replace them with the values from Wearables Developer Center.
+With Developer Mode on, `MetaAppID` and `ClientToken` can stay `0`.
+For testers on a release channel, put the real values in `Config/Secrets.xcconfig` (see above).
 
 ## Without glasses
 
@@ -76,8 +88,10 @@ sounds are relative to you.
 
 ## Known limits
 
-- **Not yet compiled.** This was written against Meta's 1.0.1 documentation and sample code
-  but hasn't been built in Xcode yet. Expect a few small fixes on the first build.
+- **Builds clean.** GitHub Actions (Xcode 26.6) has built Debug for the simulator and Release
+  for a device with zero errors since 2026-10-27. Not yet tested on real glasses.
+- **No public App Store release yet.** Meta doesn't allow Device Access Toolkit apps on the
+  App Store yet; the ceiling today is TestFlight plus Meta's invite-only release channels.
 - **Display updates are deliberately rare.** Each update is sent over the air and replaces the
   whole lens screen, so the game only sends one when something meaningful changes, not every frame.
 - **Motion and Voice Invocations are experimental** in Meta's toolkit. They work in development
@@ -95,3 +109,8 @@ sounds are relative to you.
 - New "Wider catch angle" switch (1.6x) for open-ear glasses speakers, remembered between launches.
 - Added `PrivacyInfo.xcprivacy` (UserDefaults, reason CA92.1) and `ITSAppUsesNonExemptEncryption = NO`, both needed for App Store / TestFlight upload.
 - Added a GitHub Actions workflow (`.github/workflows/build.yml`) that builds Debug-simulator and Release-device on a macOS runner and publishes errors to the `ci-logs` branch.
+- Meta App ID, client token and Apple team now come from `Config/*.xcconfig` instead of being hard-coded; real values live in a git-ignored `Config/Secrets.xcconfig`.
+
+## Developer
+
+Tinkerer (Pratik Poddar), 76, Vrindavan Vihar, Ajmer Road, Jaipur, Rajasthan 302019, India.
